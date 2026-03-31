@@ -1,0 +1,30 @@
+package com.fotova.mcpfotova;
+
+import com.fotova.mcpfotova.tool.ClientTools;
+import com.fotova.mcpfotova.tool.SalesTools;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+@SpringBootApplication
+public class McpFotovaApplication {
+
+    @Autowired
+    private SalesTools salesTools;
+
+    @Autowired
+    private ClientTools clientTools;
+
+    public static void main(String[] args) {
+        SpringApplication.run(McpFotovaApplication.class, args);
+    }
+
+    @Bean
+    public MethodToolCallbackProvider getMethodToolCallBackProvider() {
+        return MethodToolCallbackProvider.builder()
+                .toolObjects(salesTools,clientTools)
+                .build();
+    }
+}
