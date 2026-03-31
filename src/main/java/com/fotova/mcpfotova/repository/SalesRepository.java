@@ -16,33 +16,22 @@ public class SalesRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public SalesSummaryDTO getSalesSummary(LocalDateTime startDate, LocalDateTime endDate) {
+    public SalesSummaryDTO getSalesSummary() {
 
         String sql = """
-            WITH order_totals AS (
-                SELECT
-                    o.id AS order_id,
-                    o.is_done,
-                    o.create_at,
-                    SUM(op.quantity_product * p.price) AS order_total
-            FROM order_entity o
-                INNER JOIN order_product_entity op ON o.id = op.order_id
-                INNER JOIN product_entity p ON op.product_id = p.id
-                WHERE o.create_at BETWEEN ? AND ?
-                GROUP BY o.id, o.is_done, o.create_at
-                )
-            SELECT
-                COALESCE(SUM(ot.order_total), 0) AS total_revenue,
-                COUNT(ot.order_id) AS total_orders,
-                COALESCE(AVG(ot.order_total), 0) AS avg_order_value,
-                SUM(CASE WHEN ot.is_done = true THEN 1 ELSE 0 END) AS completed_orders,
-                SUM(CASE WHEN ot.is_done = false THEN 1 ELSE 0 END) AS pending_orders
-            FROM order_totals ot
-        """;
+        SELECT
+            COALESCE(SUM(op.quantity_product * p.price), 0) AS total_revenue,
+            COUNT(DISTINCT o.id) AS total_orders,
+            COALESCE(AVG(op.quantity_product * p.price), 0) AS avg_order_value,
+            SUM(CASE WHEN o.is_done <> 0 THEN 1 ELSE 0 END) AS completed_orders,
+            SUM(CASE WHEN o.is_done = 0 THEN 1 ELSE 0 END) AS pending_orders
+        FROM order_entity o
+        JOIN order_product_entity op ON o.id = op.order_id
+        JOIN product_entity p ON op.product_id = p.id
+    """;
 
         return jdbcTemplate.queryForObject(
                 sql,
-                new Object[]{startDate, endDate},
                 (rs, rowNum) -> new SalesSummaryDTO(
                         rs.getDouble("total_revenue"),
                         rs.getInt("total_orders"),
@@ -53,7 +42,7 @@ public class SalesRepository {
         );
     }
 
-    public List<SalesDetailDTO> getSalesDetails(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<SalesDetailDTO> getSalesDetails() {
         String sql = """
             SELECT
                 o.id AS order_id,
@@ -70,13 +59,12 @@ public class SalesRepository {
             INNER JOIN order_product_entity op ON o.id = op.order_id
             INNER JOIN product_entity p ON op.product_id = p.id
             INNER JOIN category_entity cat ON p.category_id = cat.id
-            WHERE o.create_at BETWEEN ? AND ?
             ORDER BY o.create_at DESC, o.id, p.name
         """;
 
         return jdbcTemplate.query(
                 sql,
-                new Object[]{startDate, endDate},
+                new Object[]{},
                 (rs, rowNum) -> new SalesDetailDTO(
                         rs.getInt("order_id"),
                         rs.getString("client_username"),
@@ -91,7 +79,7 @@ public class SalesRepository {
         );
 }
 
-    public List<CategorySalesDTO> getSalesByCategory(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<CategorySalesDTO> getSalesByCategory() {
         String sql = """
             SELECT
                 cat.name AS category_name,
@@ -102,14 +90,13 @@ public class SalesRepository {
             INNER JOIN order_product_entity op ON o.id = op.order_id
             INNER JOIN product_entity p ON op.product_id = p.id
             INNER JOIN category_entity cat ON p.category_id = cat.id
-            WHERE o.create_at BETWEEN ? AND ?
             GROUP BY cat.id, cat.name
             ORDER BY total_revenue DESC
         """;
 
         return jdbcTemplate.query(
                 sql,
-                new Object[]{startDate, endDate},
+                new Object[]{},
                 (rs, rowNum) -> new CategorySalesDTO(
                         rs.getString("category_name"),
                         rs.getInt("total_units_sold"),

@@ -1,5 +1,9 @@
 package com.fotova.mcpfotova.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
 public class SalesSummaryDTO {
 
     private double totalRevenue;
@@ -17,6 +21,4 @@ public class SalesSummaryDTO {
         this.completedOrders = completedOrders;
         this.pendingOrders = pendingOrders;
     }
-
-    // getters
 }

@@ -8,8 +8,9 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class SalesTools {
@@ -19,58 +20,67 @@ public class SalesTools {
     @Tool(
             name = "get_sales_summary",
             description = """
-            Get a summary of sales for a given period.
-            Returns total revenue, number of orders, average order value,
-            and number of completed vs pending orders.
-            
-            Use this when the user asks about:
-            - revenue
-            - sales performance
-            - number of orders
-            - business overview
-            """
+        Get a summary of sales including:
+        - total revenue
+        - total number of orders
+        - average order value
+        - number of completed and pending orders
+    """
     )
-    public SalesSummaryDTO getSalesSummary(String startDate, String endDate) {
-        LocalDateTime start = LocalDateTime.parse(startDate);
-        LocalDateTime end = LocalDateTime.parse(endDate);
-        return salesService.getSalesSummary(start, end);
+    public Map<String, Object> getSalesSummary() {
+        SalesSummaryDTO dto = salesService.getSalesSummary();
+        return Map.of(
+                "totalRevenue", dto.getTotalRevenue(),
+                "totalOrders", dto.getTotalOrders(),
+                "avgOrderValue", dto.getAverageOrderValue(),
+                "completedOrders", dto.getCompletedOrders(),
+                "pendingOrders", dto.getPendingOrders()
+        );
     }
 
     @Tool(
             name = "get_sales_details",
             description = """
-            Get a detailed list of individual sales transactions for a given period.
-            Returns specific order details like order ID, items purchased, amounts, and statuses.
-            
-            Use this when the user asks about:
-            - detailed transaction history
-            - specific orders within a timeframe
-            - individual sales records
-            """
+        Get a detailed list of individual sales transactions.
+        Returns order ID, client username, product, quantity, prices, date, completion status, and category.
+    """
     )
-    public List<SalesDetailDTO> getSalesDetails(String startDate, String endDate) {
-        LocalDateTime start = LocalDateTime.parse(startDate);
-        LocalDateTime end = LocalDateTime.parse(endDate);
-        return salesService.getSalesDetails(start, end);
+    public List<Map<String, Object>> getSalesDetails() {
+        List<SalesDetailDTO> details = salesService.getSalesDetails();
+
+        return details.stream()
+                .map(d -> Map.<String, Object>of(
+                        "orderId", d.getOrderId(),
+                        "clientUsername", d.getClientUsername(),
+                        "productName", d.getProductName(),
+                        "quantity", d.getQuantity(),
+                        "unitPrice", d.getUnitPrice(),
+                        "totalPrice", d.getTotalPrice(),
+                        "orderDate", d.getOrderDate().toString(), // string ISO
+                        "isCompleted", d.isCompleted(),
+                        "categoryName", d.getCategoryName()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Tool(
             name = "get_sales_by_category",
             description = """
-            Get sales performance broken down by product category for a given period.
-            Returns revenue and number of items sold grouped by category/department.
-            
-            Use this when the user asks about:
-            - best selling categories
-            - category performance
-            - revenue per product type
-            - which departments are performing best
-            """
+        Get sales performance broken down by product category.
+        Returns category name, total units sold, total revenue, and number of orders.
+    """
     )
-    public List<CategorySalesDTO> getSalesByCategory(String startDate, String endDate) {
-        LocalDateTime start = LocalDateTime.parse(startDate);
-        LocalDateTime end = LocalDateTime.parse(endDate);
-        return salesService.getSalesByCategory(start, end);
+    public List<Map<String, Object>> getSalesByCategory() {
+        List<CategorySalesDTO> categories = salesService.getSalesByCategory();
+
+        return categories.stream()
+                .map(c -> Map.<String, Object>of(
+                        "categoryName", c.getCategoryName(),
+                        "totalUnitsSold", c.getTotalUnitsSold(),
+                        "totalRevenue", c.getTotalRevenue(),
+                        "numberOfOrders", c.getNumberOfOrders()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Tool(
@@ -86,7 +96,6 @@ public class SalesTools {
             """
     )
     public List<SalesDetailDTO> getRecentSales(int limit) {
-        // Pas besoin de conversion de date ici, on passe directement l'entier
         return salesService.getRecentSales(limit);
     }
 }

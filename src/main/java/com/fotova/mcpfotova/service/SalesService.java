@@ -1,15 +1,13 @@
 package com.fotova.mcpfotova.service;
 
-import com.fotova.mcpfotova.dto.SalesSummaryDTO;
-import com.fotova.mcpfotova.dto.SalesDetailDTO;
 import com.fotova.mcpfotova.dto.CategorySalesDTO;
+import com.fotova.mcpfotova.dto.SalesDetailDTO;
+import com.fotova.mcpfotova.dto.SalesSummaryDTO;
 import com.fotova.mcpfotova.repository.SalesRepository;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SalesService {
@@ -17,15 +15,15 @@ public class SalesService {
     @Autowired
     private SalesRepository salesRepository;
 
-    public SalesSummaryDTO getSalesSummary(LocalDateTime start, LocalDateTime end) {
-        return salesRepository.getSalesSummary(start, end);
+    public SalesSummaryDTO getSalesSummary() {
+        return salesRepository.getSalesSummary();
     }
 
-    public List<SalesDetailDTO> getSalesDetails(LocalDateTime start, LocalDateTime end) {
-        return salesRepository.getSalesDetails(start, end);
+    public List<SalesDetailDTO> getSalesDetails() {
+        return salesRepository.getSalesDetails();
     }
-    public List<CategorySalesDTO> getSalesByCategory(LocalDateTime start, LocalDateTime end) {
-        return salesRepository.getSalesByCategory(start, end);
+    public List<CategorySalesDTO> getSalesByCategory() {
+        return salesRepository.getSalesByCategory();
     }
 
     public List<SalesDetailDTO> getRecentSales(int limit) {
