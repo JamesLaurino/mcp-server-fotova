@@ -15,15 +15,15 @@ public class SalesService {
     @Autowired
     private SalesRepository salesRepository;
 
-    public SalesSummaryDTO getSalesSummary() {
-        return salesRepository.getSalesSummary();
+    public SalesSummaryDTO getSalesSummary(String startDate, String endDate) {
+        return salesRepository.getSalesSummary(startDate, endDate);
     }
 
-    public List<SalesDetailDTO> getSalesDetails() {
-        return salesRepository.getSalesDetails();
+    public List<SalesDetailDTO> getSalesDetails(String startDate, String endDate) {
+        return salesRepository.getSalesDetails(startDate,endDate);
     }
-    public List<CategorySalesDTO> getSalesByCategory() {
-        return salesRepository.getSalesByCategory();
+    public List<CategorySalesDTO> getSalesByCategory(String startDate, String endDate) {
+        return salesRepository.getSalesByCategory(startDate,endDate);
     }
 
     public List<SalesDetailDTO> getRecentSales(int limit) {

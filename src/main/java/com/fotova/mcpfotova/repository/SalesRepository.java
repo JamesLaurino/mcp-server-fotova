@@ -1,13 +1,12 @@
 package com.fotova.mcpfotova.repository;
 
-import com.fotova.mcpfotova.dto.SalesSummaryDTO;
-import com.fotova.mcpfotova.dto.SalesDetailDTO;
 import com.fotova.mcpfotova.dto.CategorySalesDTO;
+import com.fotova.mcpfotova.dto.SalesDetailDTO;
+import com.fotova.mcpfotova.dto.SalesSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -16,7 +15,7 @@ public class SalesRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public SalesSummaryDTO getSalesSummary() {
+    public SalesSummaryDTO getSalesSummary(String startDate, String endDate) {
 
         String sql = """
         SELECT
@@ -28,10 +27,12 @@ public class SalesRepository {
         FROM order_entity o
         JOIN order_product_entity op ON o.id = op.order_id
         JOIN product_entity p ON op.product_id = p.id
+        WHERE o.create_at BETWEEN ? AND ?
     """;
 
         return jdbcTemplate.queryForObject(
                 sql,
+                new Object[]{startDate, endDate},
                 (rs, rowNum) -> new SalesSummaryDTO(
                         rs.getDouble("total_revenue"),
                         rs.getInt("total_orders"),
@@ -42,7 +43,7 @@ public class SalesRepository {
         );
     }
 
-    public List<SalesDetailDTO> getSalesDetails() {
+    public List<SalesDetailDTO> getSalesDetails(String startDate, String endDate) {
         String sql = """
             SELECT
                 o.id AS order_id,
@@ -59,12 +60,13 @@ public class SalesRepository {
             INNER JOIN order_product_entity op ON o.id = op.order_id
             INNER JOIN product_entity p ON op.product_id = p.id
             INNER JOIN category_entity cat ON p.category_id = cat.id
+            WHERE o.create_at BETWEEN ? AND ?
             ORDER BY o.create_at DESC, o.id, p.name
         """;
 
         return jdbcTemplate.query(
                 sql,
-                new Object[]{},
+                new Object[]{startDate, endDate},
                 (rs, rowNum) -> new SalesDetailDTO(
                         rs.getInt("order_id"),
                         rs.getString("client_username"),
@@ -79,7 +81,7 @@ public class SalesRepository {
         );
 }
 
-    public List<CategorySalesDTO> getSalesByCategory() {
+    public List<CategorySalesDTO> getSalesByCategory(String startDate, String endDate) {
         String sql = """
             SELECT
                 cat.name AS category_name,
@@ -90,13 +92,14 @@ public class SalesRepository {
             INNER JOIN order_product_entity op ON o.id = op.order_id
             INNER JOIN product_entity p ON op.product_id = p.id
             INNER JOIN category_entity cat ON p.category_id = cat.id
+            WHERE o.create_at BETWEEN ? AND ?
             GROUP BY cat.id, cat.name
             ORDER BY total_revenue DESC
         """;
 
         return jdbcTemplate.query(
                 sql,
-                new Object[]{},
+                new Object[]{startDate, endDate},
                 (rs, rowNum) -> new CategorySalesDTO(
                         rs.getString("category_name"),
                         rs.getInt("total_units_sold"),

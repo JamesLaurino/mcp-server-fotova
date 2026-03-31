@@ -20,15 +20,17 @@ public class SalesTools {
     @Tool(
             name = "get_sales_summary",
             description = """
-        Get a summary of sales including:
+        Get a summary of sales for a given period include:
         - total revenue
         - total number of orders
         - average order value
         - number of completed and pending orders
+
+        The date format must be of the type : yyyy-mm-dd
     """
     )
-    public Map<String, Object> getSalesSummary() {
-        SalesSummaryDTO dto = salesService.getSalesSummary();
+    public Map<String, Object> getSalesSummary(String startDate, String endDate) {
+        SalesSummaryDTO dto = salesService.getSalesSummary(startDate, endDate);
         return Map.of(
                 "totalRevenue", dto.getTotalRevenue(),
                 "totalOrders", dto.getTotalOrders(),
@@ -41,12 +43,13 @@ public class SalesTools {
     @Tool(
             name = "get_sales_details",
             description = """
-        Get a detailed list of individual sales transactions.
+        Get a detailed list of individual sales transactions for a given period.
         Returns order ID, client username, product, quantity, prices, date, completion status, and category.
+        The date format must be of the type : yyyy-mm-dd
     """
     )
-    public List<Map<String, Object>> getSalesDetails() {
-        List<SalesDetailDTO> details = salesService.getSalesDetails();
+    public List<Map<String, Object>> getSalesDetails(String startDate, String endDate) {
+        List<SalesDetailDTO> details = salesService.getSalesDetails(startDate,endDate);
 
         return details.stream()
                 .map(d -> Map.<String, Object>of(
@@ -66,12 +69,13 @@ public class SalesTools {
     @Tool(
             name = "get_sales_by_category",
             description = """
-        Get sales performance broken down by product category.
+        Get sales performance broken down by product category for a given period.
         Returns category name, total units sold, total revenue, and number of orders.
+        The date format must be of the type : yyyy-mm-dd
     """
     )
-    public List<Map<String, Object>> getSalesByCategory() {
-        List<CategorySalesDTO> categories = salesService.getSalesByCategory();
+    public List<Map<String, Object>> getSalesByCategory(String startDate, String endDate) {
+        List<CategorySalesDTO> categories = salesService.getSalesByCategory(startDate,endDate);
 
         return categories.stream()
                 .map(c -> Map.<String, Object>of(
