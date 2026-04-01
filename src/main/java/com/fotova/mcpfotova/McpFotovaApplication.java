@@ -23,6 +23,7 @@ public class McpFotovaApplication {
 
     @Bean
     public MethodToolCallbackProvider getMethodToolCallBackProvider() {
+        /* TODO : put this method in a conf file */
         return MethodToolCallbackProvider.builder()
                 .toolObjects(salesTools,clientTools)
                 .build();
