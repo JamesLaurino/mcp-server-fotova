@@ -37,8 +37,14 @@ pipeline {
 
                     string(credentialsId: 'SERVER_HOST', variable: 'SERVER_HOST'),
                     string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
-                    string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
-                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')
+                    string(credentialsId: 'MAIL_HOG_HOST', variable: 'MAIL_HOG_HOST'),
+                    string(credentialsId: 'MAIL_HOG_USERNAME', variable: 'MAIL_HOG_USERNAME'),
+                    string(credentialsId: 'MAIL_HOG_PASSWORD', variable: 'MAIL_HOG_PASSWORD'),
+                    string(credentialsId: 'RABBIT_HOST', variable: 'RABBIT_HOST'),
+                    string(credentialsId: 'RABBIT_USERNAME', variable: 'RABBIT_USERNAME'),
+                    string(credentialsId: 'RABBIT_PASSWORD', variable: 'RABBIT_PASSWORD'),
+                    string(credentialsId: 'SERVER_PROTOCOL', variable: 'SERVER_PROTOCOL'),
+                    string(credentialsId: 'SENDER_EMAIL', variable: 'SENDER_EMAIL'),
                 ]) {
                     script{
                         withEnv(['JENKINS_NODE_COOKIE=dontkill']) {

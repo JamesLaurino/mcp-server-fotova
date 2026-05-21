@@ -1,6 +1,7 @@
 package com.fotova.mcpfotova.service;
 
 import com.fotova.mcpfotova.dto.ClientDTO;
+import com.fotova.mcpfotova.dto.DetailOrdersClientDTO;
 import com.fotova.mcpfotova.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,5 +16,9 @@ public class ClientService {
 
     public List<ClientDTO> getAllClients() {
         return clientRepository.getAllClient();
+    }
+
+    public List<DetailOrdersClientDTO> getDetailOrdersClient() {
+        return clientRepository.getDetailOrdersClient();
     }
 }
