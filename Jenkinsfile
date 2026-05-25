@@ -37,6 +37,8 @@ pipeline {
 
                     string(credentialsId: 'SERVER_HOST', variable: 'SERVER_HOST'),
                     string(credentialsId: 'DB_NAME', variable: 'DB_NAME'),
+                    string(credentialsId: 'DB_USERNAME', variable: 'DB_USERNAME'),
+                    string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD'),
                     string(credentialsId: 'MAIL_HOG_HOST', variable: 'MAIL_HOG_HOST'),
                     string(credentialsId: 'MAIL_HOG_USERNAME', variable: 'MAIL_HOG_USERNAME'),
                     string(credentialsId: 'MAIL_HOG_PASSWORD', variable: 'MAIL_HOG_PASSWORD'),
