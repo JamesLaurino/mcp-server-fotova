@@ -16,7 +16,7 @@ pipeline {
 
         stage('Build & publish') {
             steps {
-                sh 'mvn clean deploy -DskipTests'
+                sh 'mvn clean deploy -Pacc -DskipTests'
             }
         }
 
